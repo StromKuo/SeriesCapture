@@ -8,7 +8,8 @@ namespace SeriesCapture
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            new Zhuixinfan().GetEpisodeUrls(testUrl);
+            new Zhuixinfan().GetAllMagnetLinks(testUrl);
+            //new Zhuixinfan().Test();
         }
     }
 }
