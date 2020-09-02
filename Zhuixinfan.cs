@@ -42,17 +42,12 @@ namespace SeriesCapture
         public string GetMagnetLink(Uri url)
         {
             HtmlWeb web = new HtmlWeb();
-            var tmp = url.AbsoluteUri;// "http://www.zhuixinfan.com/main.php?mod=viewresource&sid=11562";
-            var htmlDoc = web.Load(tmp);
+            var htmlDoc = web.Load(url);
 
             //var a = htmlDoc.GetElementbyId("torrent_url");
             //var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id='torrent_url']");
             //throw new Exception();
             var magnetLinkNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id='torrent_url']");
-            var a = magnetLinkNode.InnerHtml;
-            var b = magnetLinkNode.GetDirectInnerText();
-            var c = magnetLinkNode.ToString();
-            var d = htmlDoc.ParsedText;
             return magnetLinkNode.InnerText;
         }
     }
