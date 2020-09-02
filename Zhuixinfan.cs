@@ -8,14 +8,14 @@ namespace SeriesCapture
 {
     class Zhuixinfan
     {
-        public List<string> GetAllMagnetLinks(string seriesUrl)
+        public async Task<List<string>> GetAllMagnetLinks(string seriesUrl)
         {
             var ret = new List<string>();
 
             var urls = GetEpisodeUrls(seriesUrl);
             foreach (var episodeUri in urls)
             {
-                ret.Add(this.GetMagnetLink(episodeUri));
+                ret.Add(await this.GetMagnetLink(episodeUri));
             }
 
             return ret;
@@ -39,10 +39,10 @@ namespace SeriesCapture
             return ret;
         }
 
-        public string GetMagnetLink(Uri url)
+        public async Task<string> GetMagnetLink(Uri uri)
         {
             HtmlWeb web = new HtmlWeb();
-            var htmlDoc = web.Load(url);
+            var htmlDoc = await web.LoadFromWebAsync(uri.AbsoluteUri);
 
             //var a = htmlDoc.GetElementbyId("torrent_url");
             //var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id='torrent_url']");
