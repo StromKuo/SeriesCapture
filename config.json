@@ -1,6 +1,13 @@
-[
-    {
-        "seriesUrl": "http://www.zhuixinfan.com/viewtvplay-1193.html",
-        "directory": "D:/"
-    }
-]
+{
+    "aria2Config": {
+        "host": "http://localhost:6800/jsonrpc",
+        "token": "qE!4&u0JV$1S"
+    },
+    "seriesDatas": [
+        {
+            "seriesUrl": "http://www.zhuixinfan.com/viewtvplay-1193.html",
+            "directory": "D:/"
+        }
+    ]
+}
+    

@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SeriesCapture
 {
     class Program
     {
-        const string TestUrl = "http://www.zhuixinfan.com/viewtvplay-1193.html";
-        const string TestConfigPath = @"C:\Users\Strom\Documents\Repositories\NET\SeriesCapture\config.json";
+        const string DefaultConfigPath = "./config.json";
+        const uint IntervalMinutes = 60;
 
         /// <summary>
         /// Series url and its download links
@@ -18,31 +19,70 @@ namespace SeriesCapture
 
         static readonly Zhuixinfan _zhuixinfan = new Zhuixinfan();
 
+        static Aria2Helper _aria2Helper = null;
+
         static async Task Main(string[] args)
         {
-            _snapshot.Clear();
+            //args = new string[] { @"C:\Users\Strom\Documents\Repositories\NET\SeriesCapture\config.json" };
+            var configPath = ReadConfigPathFromArgs(args);
+            configPath = string.IsNullOrEmpty(configPath) ? DefaultConfigPath : configPath;
 
-            var configData = ReadData();
-            foreach (var seriesData in configData)
+            var configData = ReadData(configPath);
+
+            if (configData != null)
             {
-                _snapshot.Add(seriesData.seriesUrl, new HashSet<string>(await _zhuixinfan.GetAllMagnetLinks(TestUrl)));
+                _aria2Helper = new Aria2Helper(configData.aria2Config.host, configData.aria2Config.token);
+
+                _snapshot.Clear();
+
+                Console.WriteLine("Taking a snapshot of all series start.");
+                foreach (var seriesData in configData.seriesDatas)
+                {
+                    _snapshot.Add(seriesData.seriesUrl, new HashSet<string>(await _zhuixinfan.GetAllMagnetLinks(seriesData.seriesUrl)));
+                }
+                Console.WriteLine("Taking a snapshot of all series complete.");
+            }
+
+            while (true)
+            {
+                Console.WriteLine($"Schedule to grab series at {DateTime.Now + TimeSpan.FromMinutes(IntervalMinutes)}");
+                await Task.Delay(TimeSpan.FromMinutes(IntervalMinutes));
+
+                foreach (var seriesData in configData.seriesDatas)
+                {
+                    var currentLinks = await _zhuixinfan.GetAllMagnetLinks(seriesData.seriesUrl);
+                    var dirtyLinks = GetDirtyLinks(_snapshot[seriesData.seriesUrl], currentLinks);
+
+                    if (dirtyLinks.Count > 0)
+                    {
+                        Console.WriteLine("Series update found!");
+
+                        foreach (var dlink in dirtyLinks)
+                        {
+                            await _aria2Helper.AddDownload(dlink, seriesData.directory);
+                            Console.WriteLine($"Added download task to {seriesData.directory}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No series update found.");
+                    }
+                }
             }
         }
 
-        static async Task TestAria2()
+        static string ReadConfigPathFromArgs(string[] args)
         {
-            var dlink = "magnet:?xt=urn:btih:04051b54ed1343686cbabd256045906274b94a62&tr=http://tr.cili001.com:8070/announce&tr=udp://p4p.arenabg.com:1337&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://open.demonii.com:1337";
-            var a = "https://aria2.frp.strom.cf:443/jsonrpc";
-            var b = "http://localhost:6800/jsonrpc";
-            var token = "qE!4&u0JV$1S";
-            var aria2Helper = new Aria2Helper(b, token);
-            var dir = @"D:\Downloads\半泽直树测试";
-
-            await aria2Helper.AddDownload(dlink, dir);
+            if (args.Length >= 1 && !string.IsNullOrEmpty(args[0]))
+            {
+                return args[0];
+            }
+            return null;
         }
 
-        static List<SeriesData> ReadData(string path = TestConfigPath)
+        static Config ReadData(string path)
         {
+            Console.WriteLine($"Reading config from {path}");
             if (File.Exists(path))
             {
                 string fileContents;
@@ -51,7 +91,7 @@ namespace SeriesCapture
                     fileContents = sr.ReadToEnd();
                 }
 
-                return JsonConvert.DeserializeObject<List<SeriesData>>(fileContents);
+                return JsonConvert.DeserializeObject<Config>(fileContents);
             }
             else
             {
