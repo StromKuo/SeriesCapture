@@ -61,6 +61,7 @@ namespace SeriesCapture
                         {
                             await _aria2Helper.AddDownload(dlink, seriesData.directory);
                             Console.WriteLine($"Added download task to {seriesData.directory}");
+                            _snapshot[seriesData.seriesUrl].Add(dlink);
                         }
                     }
                     else
