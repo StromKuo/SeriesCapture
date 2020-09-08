@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SeriesCapture
@@ -48,7 +47,6 @@ namespace SeriesCapture
 			}
 
 			jsonObject["params"] = requestParams;
-            //string json = JsonConvert.SerializeObject(jsonObject);
 
             var stream = new MemoryStream();
             using (var streamWriter = new StreamWriter(stream: stream, leaveOpen: true))

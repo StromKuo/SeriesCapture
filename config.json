@@ -1,13 +1,16 @@
 {
-    "aria2Config": {
-        "host": "http://localhost:6800/jsonrpc",
-        "token": "qE!4&u0JV$1S"
+  "aria2Config": {
+    "host": "http://localhost:6800/jsonrpc",
+    "token": "你的token"
+  },
+  "seriesData": [
+    {
+      "seriesUrl": "http://www.zhuixinfan.com/viewtvplay-1193.html",
+      "directory": "D:/Downloads/半泽直树2"
     },
-    "seriesDatas": [
-        {
-            "seriesUrl": "http://www.zhuixinfan.com/viewtvplay-1193.html",
-            "directory": "D:/"
-        }
-    ]
+    {
+      "seriesUrl": "http://www.zhuixinfan.com/viewtvplay-1159.html",
+      "directory": "D:/Downloads/美食侦探明智五郎"
+    }
+  ]
 }
-    

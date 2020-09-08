@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SeriesCapture
@@ -23,7 +22,6 @@ namespace SeriesCapture
 
         static async Task Main(string[] args)
         {
-            //args = new string[] { @"C:\Users\Strom\Documents\Repositories\NET\SeriesCapture\config.json" };
             var configPath = ReadConfigPathFromArgs(args);
             configPath = string.IsNullOrEmpty(configPath) ? DefaultConfigPath : configPath;
 
@@ -36,7 +34,7 @@ namespace SeriesCapture
                 _snapshot.Clear();
 
                 Console.WriteLine("Taking a snapshot of all series start.");
-                foreach (var seriesData in configData.seriesDatas)
+                foreach (var seriesData in configData.seriesData)
                 {
                     _snapshot.Add(seriesData.seriesUrl, new HashSet<string>(await _zhuixinfan.GetAllMagnetLinks(seriesData.seriesUrl)));
                 }
@@ -48,7 +46,7 @@ namespace SeriesCapture
                 Console.WriteLine($"Schedule to grab series at {DateTime.Now + TimeSpan.FromMinutes(IntervalMinutes)}");
                 await Task.Delay(TimeSpan.FromMinutes(IntervalMinutes));
 
-                foreach (var seriesData in configData.seriesDatas)
+                foreach (var seriesData in configData.seriesData)
                 {
                     var currentLinks = await _zhuixinfan.GetAllMagnetLinks(seriesData.seriesUrl);
                     var dirtyLinks = GetDirtyLinks(_snapshot[seriesData.seriesUrl], currentLinks);

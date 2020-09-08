@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SeriesCapture
@@ -44,9 +43,6 @@ namespace SeriesCapture
             HtmlWeb web = new HtmlWeb();
             var htmlDoc = await web.LoadFromWebAsync(uri.AbsoluteUri);
 
-            //var a = htmlDoc.GetElementbyId("torrent_url");
-            //var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@id='torrent_url']");
-            //throw new Exception();
             var magnetLinkNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id='torrent_url']");
             return magnetLinkNode.InnerText;
         }
